@@ -33,6 +33,8 @@ public class JISSyukutaiMapParser {
     private static final int UNICODE_CODEPOINT_INDEX = 1;
     // 3列目C列にある字形のインデックス
     private static final int GLYPH_INDEX = 2;
+    // 4列目D列にあるJIS区分のインデックス
+    private static final int JIS_KUBUN_INDEX = 3;
     // ヘッダー行数
     private static final int HEADER_ROW_COUNT = 2;
 
@@ -83,6 +85,7 @@ public class JISSyukutaiMapParser {
             Cell menKuTenCell = row.getCell(MEN_KU_TEN_INDEX);
             Cell unicodeCodePointCell = row.getCell(UNICODE_CODEPOINT_INDEX);
             Cell glyphCell = row.getCell(GLYPH_INDEX);
+            Cell jisKubunCell = row.getCell(JIS_KUBUN_INDEX);
             // 面-区-点の文字列を取得
             String menKuTenCellString = menKuTenCell.getStringCellValue();
             if (menKuTenCellString == null || menKuTenCellString.isEmpty()) {
@@ -95,14 +98,16 @@ public class JISSyukutaiMapParser {
             String[] codePointStrs = unicodeCodePointCell.getStringCellValue().split(" ");
             String[] codePoints = Arrays.stream(codePointStrs).map(s -> s.replace("u+", "")) // 前後の空白を削除
                     .toArray(String[]::new);
-
             // 字形の文字列を取得
             String glyph = glyphCell.getStringCellValue();
+            // JIS区分の文字列を取得
+            String jisKubun = jisKubunCell.getStringCellValue();
             return JISCharacter.builder().men(menKuTenParts[0]) // 面
                     .ku(menKuTenParts[1]) // 区
                     .ten(menKuTenParts[2]) // 点
                     .codePoints(codePoints) // Unicodeコードポイント
                     .glyph(glyph) // 字形
+                    .kubun(jisKubun) // JIS区分
                     .build();
         } catch (RuntimeException e) {
             log.error("{}行目で、想定外のエラーが発生", row.getRowNum() + 1, e.getMessage());
