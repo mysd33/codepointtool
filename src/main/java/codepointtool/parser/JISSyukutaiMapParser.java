@@ -1,8 +1,10 @@
-package codepointtool.formater;
+package codepointtool.parser;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -12,15 +14,17 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import codepointtool.model.JISCharacter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * JIS縮退マップのExcelファイルをパースするクラス
  */
 @Slf4j
+@RequiredArgsConstructor
 public class JISSyukutaiMapParser {
-    // JIS縮退マップのExcelファイル名
-    private static final String JIS_SYKUTAI_MAP_FILE = "jissyukutaimap1_0_0.xlsx";
+    private final String jisSykutaiMapFilePath;
+
     // シート名「JIS縮退マップ」
     private static final String SHEET_NAME = "JIS縮退マップ";
     // 1列目A列にある面句点コード(面-区-点)のインデックス
@@ -43,7 +47,7 @@ public class JISSyukutaiMapParser {
     public List<JISCharacter> parse(TargetFilter targetFilter) throws IOException {
         final List<JISCharacter> jisCharacters = new ArrayList<>();
         // Apache PoiでExcelファイルを読み込む
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream(JIS_SYKUTAI_MAP_FILE)) {
+        try (InputStream is = new FileInputStream(jisSykutaiMapFilePath)) {
             try (Workbook workbook = new XSSFWorkbook(is)) {
                 // 最初のシートシートを読み込み、JISCharacterのリストを作成する
                 Sheet sheet = workbook.getSheet(SHEET_NAME);
@@ -55,10 +59,16 @@ public class JISSyukutaiMapParser {
                     }
                     JISCharacter jisCharacter = createJISCharacter(row);
                     if (jisCharacter == null) {
-                        //面句点コードが空のセルがあったところで終了
-                        break;
+                        // 面句点コードが空のセルがあったところで終了
+                        return jisCharacters;
                     }
                     if (targetFilter.isTarget(jisCharacter)) {
+                        log.debug("行番号: {}", row.getRowNum() + 1);
+                        log.debug("面-区-点: {}-{}-{}", jisCharacter.getMen(), jisCharacter.getKu(),
+                                jisCharacter.getTen());
+                        log.debug("Unicodeコードポイント: {}", String.join(", ", jisCharacter.getCodePoints()));
+                        log.debug("字形: {}", jisCharacter.getGlyph());
+                        // 条件に合致するJISCharacterをリストに追加
                         jisCharacters.add(jisCharacter);
                     }
                 }
@@ -74,21 +84,20 @@ public class JISSyukutaiMapParser {
             Cell unicodeCodePointCell = row.getCell(UNICODE_CODEPOINT_INDEX);
             Cell glyphCell = row.getCell(GLYPH_INDEX);
             // 面-区-点の文字列を取得
-            String menKuTenCellString =  menKuTenCell.getStringCellValue();
+            String menKuTenCellString = menKuTenCell.getStringCellValue();
             if (menKuTenCellString == null || menKuTenCellString.isEmpty()) {
-                log.warn("{}行目の面-区-点コードが空です。スキップします。", row.getRowNum() + 1);
+                log.info("{}行目の面-区-点コードが空です。スキップします。", row.getRowNum() + 1);
                 return null; // 空のセルはスキップ
             }
             // 「-」で分割
             String[] menKuTenParts = menKuTenCellString.split("-");
             // Unicodeコードポイントの文字列を、合成文字で複数コードポイントあるケースを考慮し半角スペースで分割
-            String[] codePoints = unicodeCodePointCell.getStringCellValue().split(" ");
+            String[] codePointStrs = unicodeCodePointCell.getStringCellValue().split(" ");
+            String[] codePoints = Arrays.stream(codePointStrs).map(s -> s.replace("u+", "")) // 前後の空白を削除
+                    .toArray(String[]::new);
+
             // 字形の文字列を取得
             String glyph = glyphCell.getStringCellValue();
-            log.debug("行番号: {}", row.getRowNum() + 1);
-            log.debug("面-区-点: {}-{}-{}", menKuTenParts[0], menKuTenParts[1], menKuTenParts[2]);
-            log.debug("Unicodeコードポイント: {}", String.join(", ", codePoints));
-            log.debug("字形: {}", glyph);
             return JISCharacter.builder().men(menKuTenParts[0]) // 面
                     .ku(menKuTenParts[1]) // 区
                     .ten(menKuTenParts[2]) // 点

@@ -1,0 +1,28 @@
+package ${codePointsClass.PackageName};
+
+import org.terasoluna.gfw.common.codepoints.CodePoints;
+
+/**
+ *  ${codePointsClass.Description}
+ */
+public final class ${codePointsClass.ClassName} extends CodePoints {
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * コンストラクタ
+     */
+    public ${codePointsClass.ClassName}() {
+	        super(t0(new Integer[${codePointsClass.CharArrayLength}]));
+    }
+
+    private static Integer[] t0(Integer[] cp) {
+#set( $i = 0 )
+#foreach( $character in ${codePointsClass.Characters} )            
+    #foreach($codePoint in $character.CodePoints)
+        cp[$i] = 0x${codePoint}; // ${character.glyph}(${character.men}-${character.ku}-${character.ten}) 
+        #set( $i = $i + 1 )
+    #end
+#end
+        return cp;
+    }
+}   

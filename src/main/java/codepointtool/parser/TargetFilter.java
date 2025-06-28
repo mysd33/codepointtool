@@ -1,4 +1,4 @@
-package codepointtool.formater;
+package codepointtool.parser;
 
 import codepointtool.model.JISCharacter;
 
@@ -8,6 +8,10 @@ import codepointtool.model.JISCharacter;
  * 
  */
 public interface TargetFilter {
-    boolean isTarget(JISCharacter jisCharacter);
+    /**
+     * JISCharacterがこのフィルタの対象かどうかを判定する
+     * @param jisCharacter 対象のJISCharacter
+     */
+   boolean isTarget(JISCharacter jisCharacter);
 
 }
