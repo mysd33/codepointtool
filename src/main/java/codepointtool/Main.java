@@ -15,7 +15,7 @@ public class Main {
     // JIS縮退マップのExcelファイル名
     private static final String JIS_SYKUTAI_MAP_FILEPATH = "input/jissyukutaimap1_0_0.xlsx";
     // 出力するコードポイントクラスのパッケージ名
-    private static final String CODE_POINTS_CLASS_PACKAGE = "com.example.fw.common.codepoints";
+    private static final String CODE_POINTS_CLASS_PACKAGE = "com.example.fw.common.codepoints.catalog";
 
     /**
      * メインメソッド

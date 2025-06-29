@@ -12,18 +12,27 @@ public final class ${codePointsClass.ClassName} extends CodePoints {
      * コンストラクタ
      */
     public ${codePointsClass.ClassName}() {
-#set( $arrayLength = $codePointsClass.Characters.size() - 1 )
-	        super(t0(new Integer[${arrayLength}]));
-    }
-
-    private static Integer[] t0(Integer[] cp) {
+        super(
+#set( $length = $codePointsClass.Characters.size() - 1 ) 
 #set( $i = 0 )
-#foreach( $character in ${codePointsClass.Characters} )            
-    #foreach($codePoint in $character.CodePoints)
-        cp[$i] = 0x${codePoint}; // ${character.glyph}(${character.men}-${character.ku}-${character.ten}) 
-        #set( $i = $i + 1 )
+#foreach( $character in ${codePointsClass.Characters} )
+    #set( $cpLength = ${character.CodePointLength} - 1 )
+    #if( $cpLength == 1 )
+        #set ( $comment = "合成文字" )
+    #else
+        #set ( $comment = "" )
     #end
+    #set( $j = 0 )   
+    #foreach($codePoint in $character.CodePoints)    
+        #if( $i == $length && $j == $cpLength )
+            0x${codePoint} // ${character.glyph}(${character.men}-${character.ku}-${character.ten}) ${comment}   
+        #else
+            0x${codePoint}, // ${character.glyph}(${character.men}-${character.ku}-${character.ten}) ${comment}
+        #end        
+        #set( $j = $j + 1 ) 
+    #end    
+    #set( $i = $i + 1 )
 #end
-        return cp;
+        );
     }
-}   
+}

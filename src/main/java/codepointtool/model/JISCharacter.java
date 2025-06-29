@@ -28,5 +28,9 @@ public class JISCharacter {
     private final String glyph;
     // JIS区分(JIS1水, JIS2水, JIS3水, JIS4水, 非漢字, 追加非漢字)
     private final String kubun;
+    
+    public int getCodePointLength() {
+        return codePoints == null ? 0 : codePoints.length;
+    }
 
 }
