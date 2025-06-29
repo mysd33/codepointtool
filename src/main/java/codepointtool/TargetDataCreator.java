@@ -17,6 +17,10 @@ public class TargetDataCreator {
     public List<TargetData> getTargetDataList() {
         return List.of(
                 // TODO: 必要に応じて追加・修正してください
+                // 特殊文字のうち全角文字（記号なし）チェックに含めたいもの
+                new TargetData("CustomFullWidthCharSet", "特殊文字扱いでも全角文字（記号なし）チェックに含める文字集合を表すクラス",
+                        // JIS X 0208の全角長音（0x30FC）
+                        jisCharacter -> "30fc".equals(jisCharacter.getCodePoints()[0])),                
                 // JIS X 0213で追加された非漢字の特殊ひらがな
                 new TargetData("JIS_X_0213_SpecialHiragana", "JIS X 0213の特殊ひらがな（1面4区）の文字集合を表すクラス",
                         jisCharacter -> "01".equals(jisCharacter.getMen()) && "04".equals(jisCharacter.getKu())
