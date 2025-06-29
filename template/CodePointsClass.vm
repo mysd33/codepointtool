@@ -12,7 +12,8 @@ public final class ${codePointsClass.ClassName} extends CodePoints {
      * コンストラクタ
      */
     public ${codePointsClass.ClassName}() {
-	        super(t0(new Integer[${codePointsClass.CharArrayLength}]));
+#set( $arrayLength = $codePointsClass.Characters.size() - 1 )
+	        super(t0(new Integer[${arrayLength}]));
     }
 
     private static Integer[] t0(Integer[] cp) {

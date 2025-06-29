@@ -16,7 +16,4 @@ public class CodePointsClassModel {
     private final String description; // クラスの説明
     private final List<JISCharacter> characters; // JISコードの文字リスト
 
-    public int getCharArrayLength() {
-        return characters != null ? characters.size() - 1 : 0;
-    }
 }

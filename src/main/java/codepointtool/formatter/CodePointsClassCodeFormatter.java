@@ -23,10 +23,17 @@ public class CodePointsClassCodeFormatter {
     private static final String GENERATED_SOURCE_DIR = "generated/src/main/java/";
     private static final String VM_TEMPLATE_FILEPATH = "template/CodePointsClass.vm";
 
+    /**
+     * CodePointsClassModelをもとにTERASOLUNA Server FrameworkのCodePointsクラスを作成します。
+     * @param model CodePointsClassModel
+     * @throws IOException
+     */
     public void format(CodePointsClassModel model) throws IOException {
         log.info("{}に{}.{}のソースコード作成", GENERATED_SOURCE_DIR, model.getPackageName(), model.getClassName());
+        // Velocityの初期化
         Velocity.init();
         VelocityContext context = new VelocityContext();
+        // Velocityのコンテキストにモデルを設定
         context.put("codePointsClass", model);
 
         String filePath = new StringBuilder(GENERATED_SOURCE_DIR).//
@@ -34,10 +41,11 @@ public class CodePointsClassCodeFormatter {
                 .append("/").append(model.getClassName())
                 .append(".java").toString();
 
-        // ディレクトリを作成
         File file = new File(filePath);
+        // ディレクトリを作成
         file.getParentFile().mkdirs();
-        
+
+        // Velocityテンプレートを使用してファイルに書き込む
         try (Writer writer = new BufferedWriter(new FileWriter(file))) {
             Template template = Velocity.getTemplate(VM_TEMPLATE_FILEPATH);
             template.merge(context, writer);
