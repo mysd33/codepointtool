@@ -48,6 +48,11 @@ public class TargetDataCreator {
                             "01-07-84".equals(menkuTen) || // ヹ(01-07-84)
                             "01-07-85".equals(menkuTen); // ヺ(01-07-85)
                 }),
+                // JIS X 0213で追加された非漢字の特殊文字、記号（1面2-3区）
+                new TargetData("JIS_X_0213_2_3ku_AddedSpecialChars", "JIS X 0213の追加非漢字の特殊文字、記号（1面2～3区）の文字集合を表すクラス",                        
+                        jisCharacter -> "01".equals(jisCharacter.getMen())
+                                && ("02".equals(jisCharacter.getKu()) || "03".equals(jisCharacter.getKu()))
+                                && JISCharacter.JIS_ADDED_NOT_KANJI.equals(jisCharacter.getKubun())),                
                 // JIS X 0213で追加された非漢字の特殊ひらがな（1面4区）
                 new TargetData("JIS_X_0213_4ku_AddedSpecialHiragana", "JIS X 0213の追加非漢字の特殊ひらがな（1面4区）の文字集合を表すクラス",
                         jisCharacter -> "01".equals(jisCharacter.getMen()) && "04".equals(jisCharacter.getKu())
